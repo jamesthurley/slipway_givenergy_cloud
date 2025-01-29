@@ -1,0 +1,13 @@
+{
+  "publisher": "slipwayhq",
+  "name": "givenergy_cloud",
+  "description": "Fetches data from GivEnergy Cloud.",
+  "version": "0.0.1",
+  "input": {
+    "optionalProperties": {
+      "inverter_id": { "type": "string" },
+      "api_token": { "type": "string" }
+    }
+  },
+  "output": {}
+}

@@ -1,0 +1,29 @@
+{
+  "publisher": "test",
+  "name": "rig",
+  "version": "0.0.1",
+  "description": "Calls the component",
+  "rigging": {
+    "ge": {
+      "component": "slipwayhq.givenergy_cloud.0.0.1",
+      "allow": [
+        { "permission": "http" },
+        { "permission": "env", "prefix":"GIVENERGY_" }
+      ],
+      "input": {}
+    },
+    "echarts": {
+      "component": "slipwayhq.echarts.0.0.1",
+      "allow": [
+        { "permission": "font" },
+        { "permission": "registry_component", "publisher": "slipwayhq", "name": "svg" },
+        { "permission": "registry_component", "publisher": "slipwayhq", "name": "echarts_svg" }
+      ],
+      "input": {
+        "width": 800,
+        "height": 600,
+        "chart": "$$.ge.chart"
+      }
+    }
+  }
+}  
