@@ -7,7 +7,7 @@
     "ge": {
       "component": "slipwayhq.givenergy_cloud.0.0.1",
       "allow": [
-        { "permission": "http" },
+        { "permission": "http", "prefix":"https://api.givenergy.cloud/" },
         { "permission": "env", "prefix":"GIVENERGY_" }
       ],
       "input": {}
@@ -22,7 +22,35 @@
       "input": {
         "width": 800,
         "height": 600,
-        "chart": "$$.ge.chart"
+        "chart": "$$.ge.chart",
+        "theme": {
+          "color": ["#000"],
+          "backgroundColor": "#FFF",
+          "textStyle": { "color": "#000" },
+          "title": {
+            "textStyle": { "color": "#000" },
+            "subtextStyle": { "color": "#000" }
+          },
+          "axisLine": {
+            "lineStyle": { "color": "#000" }
+          },
+          "axisTick": {
+            "lineStyle": { "color": "#000" }
+          },
+          "axisLabel": { "color": "#000" },
+          "splitLine": {
+            "lineStyle": { "color": "#000" }
+          },
+          "splitArea": {
+            "areaStyle": { "color": ["#FFF", "#FFF"] }
+          },
+          "toolbox": {
+            "iconStyle": { "borderColor": "#000" }
+          },
+          "legend": {
+            "textStyle": { "color": "#000" }
+          }
+        }
       }
     }
   }

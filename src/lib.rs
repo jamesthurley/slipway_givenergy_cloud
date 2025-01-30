@@ -1,6 +1,6 @@
 use std::{fmt::Display, vec};
 
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, Local, Utc};
 use serde::{Deserialize, Serialize};
 use slipway_host::{RequestError, RequestOptions};
 
@@ -51,23 +51,32 @@ impl Guest for Component {
             timeout_ms: None,
         };
 
-        let result = slipway_host::fetch_text(
+        let today = Local::now().date_naive();
+        let yesterday = today - Duration::days(1);
+
+        let today_str = today.format("%Y-%m-%d").to_string();
+        let yesterday_str = yesterday.format("%Y-%m-%d").to_string();
+
+        let mut all_data = vec![];
+
+        for day_str in [yesterday_str, today_str] {
+            let result = slipway_host::fetch_text(
                 &format!(
-                    "https://api.givenergy.cloud/v1/inverter/{inverter_id}/data-points/2024-12-15?page=1"
+                    "https://api.givenergy.cloud/v1/inverter/{inverter_id}/data-points/{day_str}?page=1"
                 ),
                 Some(&request_options),
             )?;
 
-        let mut body: PartialDataResponse = serde_json::from_str(&result.body).unwrap();
-
-        let mut all_data = body.data;
-
-        while let Some(next) = body.links.next {
-            slipway_host::log_info(&format!("Calling: {next}"));
-
-            let result = slipway_host::fetch_text(&next, Some(&request_options))?;
-            body = serde_json::from_str(&result.body).unwrap();
+            let mut body: PartialDataResponse = serde_json::from_str(&result.body).unwrap();
             all_data.extend(body.data);
+
+            while let Some(next) = body.links.next {
+                slipway_host::log_info(&format!("Calling: {next}"));
+
+                let result = slipway_host::fetch_text(&next, Some(&request_options))?;
+                body = serde_json::from_str(&result.body).unwrap();
+                all_data.extend(body.data);
+            }
         }
 
         slipway_host::log_info(&format!("Got {} data points.", all_data.len()));
@@ -106,13 +115,17 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
     serde_json::json!({
         "backgroundColor": "#ffffff",
         "legend": {
-            "data": ["Solar", "Grid", "Battery", "Battery %", "Consumption"]
+            "data": ["Consumption", "Grid", "Battery", "Solar", "Battery %", ]
+        },
+        "grid": {
+            "bottom": 30,
+            "left": 70,
+            "right": 50,
         },
         "xAxis": {
             "type": "time",
-            // Format the label to only show HH:mm
             "axisLabel": {
-                "formatter": "{HH}:{mm}"
+                "formatter": "{dd}/{MM} {HH}:{mm}"
             }
         },
         "yAxis": [
@@ -129,13 +142,15 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
         ],
         "series": [
             {
-                "name": "Solar",
+                "name": "Consumption",
                 "type": "line",
                 "showSymbol": false,
-                // Each data point becomes [time, value] for a time axis
-                "data": times.iter().zip(solar.iter())
+                "data": times.iter().zip(consumption.iter())
                     .map(|(t, &v)| serde_json::json!([t, v]))
-                    .collect::<Vec<_>>()
+                    .collect::<Vec<_>>(),
+                "lineStyle": {
+                    "type": "solid",
+                }
             },
             {
                 "name": "Grid",
@@ -143,7 +158,10 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
                 "showSymbol": false,
                 "data": times.iter().zip(grid.iter())
                     .map(|(t, &v)| serde_json::json!([t, v]))
-                    .collect::<Vec<_>>()
+                    .collect::<Vec<_>>(),
+                "lineStyle": {
+                    "type": "dashed",
+                }
             },
             {
                 "name": "Battery",
@@ -151,7 +169,22 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
                 "showSymbol": false,
                 "data": times.iter().zip(battery.iter())
                     .map(|(t, &v)| serde_json::json!([t, v]))
-                    .collect::<Vec<_>>()
+                    .collect::<Vec<_>>(),
+                "lineStyle": {
+                    "type": "dotted",
+                }
+            },
+            {
+                "name": "Solar",
+                "type": "line",
+                "showSymbol": false,
+                // Each data point becomes [time, value] for a time axis
+                "data": times.iter().zip(solar.iter())
+                    .map(|(t, &v)| serde_json::json!([t, v]))
+                    .collect::<Vec<_>>(),
+                "lineStyle": {
+                    "type": [8, 4, 2, 4],
+                }
             },
             {
                 "name": "Battery %",
@@ -161,15 +194,10 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
                 "yAxisIndex": 1,
                 "data": times.iter().zip(battery_percent.iter())
                     .map(|(t, &v)| serde_json::json!([t, v]))
-                    .collect::<Vec<_>>()
-            },
-            {
-                "name": "Consumption",
-                "type": "line",
-                "showSymbol": false,
-                "data": times.iter().zip(consumption.iter())
-                    .map(|(t, &v)| serde_json::json!([t, v]))
-                    .collect::<Vec<_>>()
+                    .collect::<Vec<_>>(),
+                "lineStyle": {
+                    "type": [8, 4, 4, 4],
+                }
             }
         ]
     })
