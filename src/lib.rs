@@ -60,22 +60,14 @@ impl Guest for Component {
         let mut all_data = vec![];
 
         for day_str in [yesterday_str, today_str] {
-            let result = slipway_host::fetch_text(
-                &format!(
-                    "https://api.givenergy.cloud/v1/inverter/{inverter_id}/data-points/{day_str}?page=1"
-                ),
-                Some(&request_options),
-            )?;
+            let mut next = Some(format!("https://api.givenergy.cloud/v1/inverter/{inverter_id}/data-points/{day_str}?page=1"));
+            while let Some(url) = next {
+                slipway_host::log_info(&format!("Calling: {url}"));
 
-            let mut body: PartialDataResponse = serde_json::from_str(&result.body).unwrap();
-            all_data.extend(body.data);
-
-            while let Some(next) = body.links.next {
-                slipway_host::log_info(&format!("Calling: {next}"));
-
-                let result = slipway_host::fetch_text(&next, Some(&request_options))?;
-                body = serde_json::from_str(&result.body).unwrap();
+                let result = slipway_host::fetch_text(&url, Some(&request_options))?;
+                let body: PartialDataResponse = serde_json::from_str(&result.body).unwrap();
                 all_data.extend(body.data);
+                next = body.links.next;
             }
         }
 
@@ -115,7 +107,10 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
     serde_json::json!({
         "backgroundColor": "#ffffff",
         "legend": {
-            "data": ["Consumption", "Grid", "Battery", "Solar", "Battery %", ]
+            "data": ["Consumption", "Grid", "Battery", "Solar", "Battery %", ],
+            "itemStyle": {
+                "opacity": 0
+            }
         },
         "grid": {
             "bottom": 30,
@@ -126,13 +121,39 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
             "type": "time",
             "axisLabel": {
                 "formatter": "{dd}/{MM} {HH}:{mm}"
+            },
+            "position": "bottom",
+            "axisLine": {
+                "onZero": false,
+            },
+            "axisTick": {
+                "show": true,
+                "lineStyle": {
+                    "width": 1,
+                    "color": "#000"
+                }
+            },
+            "splitLine": {
+                "show": true,
+                "lineStyle": {
+                    "color": "#000",
+                    "type": [
+                        1,
+                        8
+                    ]
+                }
             }
         },
         "yAxis": [
             {
                 "type": "value",
                 "name": "Power (W)",
-                "splitLine": { "show": true }
+                "splitLine": {
+                    "lineStyle": {
+                        "color": "#000",
+                        "type": [1, 8]
+                    }
+                }
             },
             {
                 "type": "value",
@@ -178,7 +199,6 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
                 "name": "Solar",
                 "type": "line",
                 "showSymbol": false,
-                // Each data point becomes [time, value] for a time axis
                 "data": times.iter().zip(solar.iter())
                     .map(|(t, &v)| serde_json::json!([t, v]))
                     .collect::<Vec<_>>(),
@@ -280,10 +300,7 @@ impl From<RequestError> for ComponentError {
     fn from(error: RequestError) -> Self {
         let mut inner = error.inner;
         if let Some(response) = error.response {
-            inner.push(format!(
-                "{:?}",
-                String::from_utf8(response.body).expect("Body should be a string")
-            ));
+            inner.push(response.body);
         }
         ComponentError {
             message: error.message,

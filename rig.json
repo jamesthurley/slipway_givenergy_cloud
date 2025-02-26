@@ -39,7 +39,10 @@
           },
           "axisLabel": { "color": "#000" },
           "splitLine": {
-            "lineStyle": { "color": "#000" }
+            "lineStyle": { 
+              "color": "#000",
+              "type": "dashed"
+            }
           },
           "splitArea": {
             "areaStyle": { "color": ["#FFF", "#FFF"] }
