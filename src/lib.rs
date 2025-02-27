@@ -105,9 +105,8 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
     let consumption: Vec<f32> = data.iter().map(|d| d.power.consumption.power).collect();
 
     serde_json::json!({
-        "backgroundColor": "#ffffff",
         "legend": {
-            "data": ["Consumption", "Grid", "Battery", "Solar", "Battery %", ],
+            "data": ["Consumption", "Battery", "Solar", "Grid", "Battery %", ],
             "itemStyle": {
                 "opacity": 0
             }
@@ -130,7 +129,6 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
                 "show": true,
                 "lineStyle": {
                     "width": 1,
-                    "color": "#000"
                 }
             },
             "splitLine": {
@@ -174,17 +172,6 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
                 }
             },
             {
-                "name": "Grid",
-                "type": "line",
-                "showSymbol": false,
-                "data": times.iter().zip(grid.iter())
-                    .map(|(t, &v)| serde_json::json!([t, v]))
-                    .collect::<Vec<_>>(),
-                "lineStyle": {
-                    "type": "dashed",
-                }
-            },
-            {
                 "name": "Battery",
                 "type": "line",
                 "showSymbol": false,
@@ -204,6 +191,17 @@ fn build_echarts_json(data: &[PartialDataPoint]) -> serde_json::Value {
                     .collect::<Vec<_>>(),
                 "lineStyle": {
                     "type": [8, 4, 2, 4],
+                }
+            },
+            {
+                "name": "Grid",
+                "type": "line",
+                "showSymbol": false,
+                "data": times.iter().zip(grid.iter())
+                    .map(|(t, &v)| serde_json::json!([t, v]))
+                    .collect::<Vec<_>>(),
+                "lineStyle": {
+                    "type": "dashed",
                 }
             },
             {

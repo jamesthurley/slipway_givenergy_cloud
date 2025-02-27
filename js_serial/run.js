@@ -65,9 +65,8 @@ function buildEchartsJson(data) {
   const consumption = data.map(d => d.power.consumption.power);
 
   return {
-    backgroundColor: "#ffffff",
     legend: {
-      data: ["Consumption", "Grid", "Battery", "Solar", "Battery %"],
+      data: ["Consumption", "Battery", "Solar", "Grid", "Battery %"],
       itemStyle: { opacity: 0 }
     },
     grid: {
@@ -82,7 +81,7 @@ function buildEchartsJson(data) {
       axisLine: { onZero: false },
       axisTick: {
         show: true,
-        lineStyle: { width: 1, color: "#000" }
+        lineStyle: { color: "#000", width: 1 }
       },
       splitLine: {
         show: true,
@@ -112,13 +111,6 @@ function buildEchartsJson(data) {
         lineStyle: { type: "solid" }
       },
       {
-        name: "Grid",
-        type: "line",
-        showSymbol: false,
-        data: times.map((t, i) => [t, grid[i]]),
-        lineStyle: { type: "dashed" }
-      },
-      {
         name: "Battery",
         type: "line",
         showSymbol: false,
@@ -131,6 +123,13 @@ function buildEchartsJson(data) {
         showSymbol: false,
         data: times.map((t, i) => [t, solar[i]]),
         lineStyle: { type: [8, 4, 2, 4] }
+      },
+      {
+        name: "Grid",
+        type: "line",
+        showSymbol: false,
+        data: times.map((t, i) => [t, grid[i]]),
+        lineStyle: { type: "dashed" }
       },
       {
         name: "Battery %",
