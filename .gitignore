@@ -1,6 +1,9 @@
 /target
 /artifacts
+/components
 
 tmp.png
 /tmp
 /output
+
+.DS_Store
