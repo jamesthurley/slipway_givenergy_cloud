@@ -1,4 +1,4 @@
-async function run(input) {
+export async function run(input) {
   // Gather inverter_id and api_token from the input or from environment variables
   const apiToken = input.api_token ?? slipway_host.env("GIVENERGY_API_TOKEN");
   if (!apiToken) {
@@ -140,5 +140,3 @@ function buildEchartsJson(data) {
     ]
   };
 }
-
-export let output = run(input);
