@@ -3,26 +3,28 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - '*'
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install just
+        run: cargo install just
+
       - name: Check out code
         uses: actions/checkout@v4
 
-      # Grab the tag without the leading "v"
       - name: Extract version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_ENV"
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
 
       - name: Patch version field in JSON
         run: |
           jq --arg v "$VERSION" '.version = $v' src/slipway_component.json > tmp && mv tmp src/slipway_component.json
 
       - name: Build release tarball
-        run: just build
+        run: just build-ci
 
       - name: Create GitHub release
         id: create_release
