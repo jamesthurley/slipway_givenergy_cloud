@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      # Grab the tag without the leading "v"
+      - name: Extract version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_ENV"
+
+      - name: Patch version field in JSON
+        run: |
+          jq --arg v "$VERSION" '.version = $v' src/slipway_component.json > tmp && mv tmp src/slipway_component.json
+
+      - name: Build release tarball
+        run: just build
+
+      - name: Create GitHub release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ env.VERSION }}"
+          draft: false
+          prerelease: false
+
+      - name: Upload asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: "components/*.tar"
