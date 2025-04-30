@@ -1,14 +1,10 @@
 publisher := "jamesthurley"
 name := "givenergy_cloud"
 
-assemble:
-  rm -rf components
-  mkdir -p components/{{publisher}}.{{name}}
-  cp -r src/* components/{{publisher}}.{{name}}
-
 build: assemble && package
-
 build-ci: assemble && package-ci
+
+assemble:
   rm -rf components
   mkdir -p components/{{publisher}}.{{name}}
   cp -r src/* components/{{publisher}}.{{name}}
