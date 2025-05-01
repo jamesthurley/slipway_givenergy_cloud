@@ -1,19 +1,16 @@
 {
-  "publisher": "test",
-  "name": "rig",
-  "version": "0.0.1",
-  "description": "Calls the component",
+  "description": "Example rig for rending GivEnergy data with ECharts",
   "rigging": {
     "ge": {
-      "component": "slipwayhq.givenergy_cloud.0.0.1",
+      "component": "jamesthurley.givenergy_cloud.0.5.0",
       "allow": [
         { "permission": "http", "prefix":"https://api.givenergy.cloud/" },
         { "permission": "env", "prefix":"GIVENERGY_" }
       ],
       "input": {}
     },
-    "echarts": {
-      "component": "slipwayhq.echarts.0.0.1",
+    "render": {
+      "component": "slipwayhq.echarts.0.5.1",
       "allow": [
         { "permission": "fonts" },
         { "permission": "registry_components", "publisher": "slipwayhq", "name": "svg" },
@@ -21,7 +18,7 @@
       ],
       "input": {
         "width": 800,
-        "height": 600,
+        "height": 480,
         "chart": "$$.ge.chart",
         "theme": {
           "color": ["#000"],
@@ -39,8 +36,10 @@
           },
           "axisLabel": { "color": "#000" },
           "splitLine": {
+            "lineStyle": { 
               "color": "#000",
               "type": "dashed"
+            }
           },
           "splitArea": {
             "areaStyle": { "color": ["#FFF", "#FFF"] }
