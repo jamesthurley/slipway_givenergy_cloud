@@ -10,6 +10,8 @@ export async function run(input) {
     throw new Error("No inverter ID provided. Use the input field or the GIVENERGY_INVERTER_ID environment variable.");
   }
 
+  const timezone = input.timezone;
+
   const requestOptions = {
     method: "GET",
     body: null,
@@ -22,13 +24,13 @@ export async function run(input) {
   };
 
   // Prepare day strings (yesterday & today) in YYYY-MM-DD
-  const now = new Date();
-  const localToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const localYesterday = new Date(localToday);
-  localYesterday.setDate(localYesterday.getDate() - 1);
+  const todayStr = Temporal.Now.plainDateISO(timezone).toString();
+  slipway_host.log_info(`Today: ${todayStr}`);
 
-  const todayStr = localToday.toISOString().split("T")[0];
-  const yesterdayStr = localYesterday.toISOString().split("T")[0];
+  const yesterdayStr = Temporal.Now.plainDateISO(timezone)
+    .subtract({ days: 1 })
+    .toString();
+    slipway_host.log_info(`Yesterday: ${yesterdayStr}`);
 
   // Fetch both days' data in parallel
   const [yesterdayData, todayData] = await Promise.all([
