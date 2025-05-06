@@ -10,8 +10,6 @@ export async function run(input) {
     throw new Error("No inverter ID provided. Use the input field or the GIVENERGY_INVERTER_ID environment variable.");
   }
 
-  const timezone = input.timezone;
-
   const requestOptions = {
     method: "GET",
     body: null,
@@ -23,14 +21,18 @@ export async function run(input) {
     timeout_ms: null
   };
 
+  const tz = process.env.TZ;
+  console.log(`Timezone: ${tz}`);
+  console.log(`Now: ${Temporal.Now.plainDateTimeISO(tz).toString()}`);
+  
   // Prepare day strings (yesterday & today) in YYYY-MM-DD
-  const todayStr = Temporal.Now.plainDateISO(timezone).toString();
-  slipway_host.log_info(`Today: ${todayStr}`);
+  const todayStr = Temporal.Now.plainDateISO(tz).toString();
+  console.log(`Today: ${todayStr}`);
 
-  const yesterdayStr = Temporal.Now.plainDateISO(timezone)
+  const yesterdayStr = Temporal.Now.plainDateISO(tz)
     .subtract({ days: 1 })
     .toString();
-    slipway_host.log_info(`Yesterday: ${yesterdayStr}`);
+    console.log(`Yesterday: ${yesterdayStr}`);
 
   // Fetch both days' data in parallel
   const [yesterdayData, todayData] = await Promise.all([
@@ -41,7 +43,7 @@ export async function run(input) {
   // Combine data in the correct order
   const allData = [...yesterdayData, ...todayData];
 
-  slipway_host.log_info(`Got ${allData.length} data points.`);
+  console.log(`Got ${allData.length} data points.`);
 
   // Build ECharts JSON
   const chartJson = buildEchartsJson(allData);
@@ -53,7 +55,7 @@ export async function run(input) {
 async function gatherDayData(dayStr, inverterId, requestOptions) {
   // Fetch page 1 first so we know how many pages there are
   const page1Url = `https://api.givenergy.cloud/v1/inverter/${inverterId}/data-points/${dayStr}?page=1`;
-  slipway_host.log_info(`Calling: ${page1Url}`);
+  console.log(`Calling: ${page1Url}`);
   const page1Result = await slipway_host.fetch_text(page1Url, requestOptions);
   const page1Body = JSON.parse(page1Result.body);
 
@@ -88,7 +90,7 @@ async function gatherDayData(dayStr, inverterId, requestOptions) {
 // Helper to fetch a specific page, returning { page, body }
 function fetchPage(path, requestOptions, page) {
   const url = `${path}?page=${page}`;
-  slipway_host.log_info(`Calling: ${url}`);
+  console.log(`Calling: ${url}`);
   return slipway_host.fetch_text(url, requestOptions).then(result => {
     return {
       page,
