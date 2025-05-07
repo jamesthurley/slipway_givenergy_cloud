@@ -46,9 +46,54 @@ export async function run(input) {
   console.log(`Got ${allData.length} data points.`);
 
   // Build ECharts JSON
-  const chartJson = buildEchartsJson(allData);
+  const chart = buildEchartsJson(allData);
+  const theme = createTheme(input.theme);
 
-  return { chart: chartJson };
+  return { 
+    chart,
+    theme
+  };
+}
+
+function createTheme(theme) {
+  if (theme === "monochrome") {
+    return {
+      "color": ["#000"],
+      "backgroundColor": "#FFF",
+      "textStyle": { "color": "#000" },
+      "title": {
+        "textStyle": { "color": "#000" },
+        "subtextStyle": { "color": "#000" }
+      },
+      "axisLine": {
+        "lineStyle": { "color": "#000" }
+      },
+      "axisTick": {
+        "lineStyle": { "color": "#000" }
+      },
+      "axisLabel": { "color": "#000" },
+      "splitLine": {
+        "lineStyle": { 
+          "color": "#000",
+          "type": "dashed"
+        }
+      },
+      "splitArea": {
+        "areaStyle": { "color": ["#FFF", "#FFF"] }
+      },
+      "toolbox": {
+        "iconStyle": { "borderColor": "#000" }
+      },
+      "legend": {
+        "textStyle": { "color": "#000" }
+      }
+    }
+  }
+
+  // Default to color theme.
+  return {
+    "backgroundColor": "#FFF"
+  };
 }
 
 // Fetch the first page for a given day, then parallelize the rest of the pages

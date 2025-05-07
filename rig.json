@@ -5,52 +5,15 @@
       "component": "jamesthurley.givenergy_cloud.0.5.0",
       "allow": [
         { "permission": "http", "prefix":"https://api.givenergy.cloud/" },
-        { "permission": "env", "prefix":"GIVENERGY_" }
-      ],
-      "input": {}
-    },
-    "render": {
-      "component": "slipwayhq.echarts.0.5.1",
-      "allow": [
+        { "permission": "env", "prefix":"GIVENERGY_" },
         { "permission": "fonts" },
-        { "permission": "registry_components", "publisher": "slipwayhq", "name": "svg" },
-        { "permission": "registry_components", "publisher": "slipwayhq", "name": "echarts_svg" }
+        { "permission": "registry_components", "publisher": "slipwayhq" },
+        { "permission": "registry_components", "publisher": "slipwayhq" }
       ],
       "input": {
         "width": 800,
         "height": 480,
-        "chart": "$$.ge.chart",
-        "theme": {
-          "color": ["#000"],
-          "backgroundColor": "#FFF",
-          "textStyle": { "color": "#000" },
-          "title": {
-            "textStyle": { "color": "#000" },
-            "subtextStyle": { "color": "#000" }
-          },
-          "axisLine": {
-            "lineStyle": { "color": "#000" }
-          },
-          "axisTick": {
-            "lineStyle": { "color": "#000" }
-          },
-          "axisLabel": { "color": "#000" },
-          "splitLine": {
-            "lineStyle": { 
-              "color": "#000",
-              "type": "dashed"
-            }
-          },
-          "splitArea": {
-            "areaStyle": { "color": ["#FFF", "#FFF"] }
-          },
-          "toolbox": {
-            "iconStyle": { "borderColor": "#000" }
-          },
-          "legend": {
-            "textStyle": { "color": "#000" }
-          }
-        }
+        "theme": "color"
       }
     }
   }

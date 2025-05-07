@@ -4,10 +4,31 @@
   "description": "Fetches data from GivEnergy Cloud.",
   "version": "0.0.1",
   "input": {
+    "properties": {
+      "width": { "type": "uint32" },
+      "height": { "type": "uint32" }
+    },
     "optionalProperties": {
       "inverter_id": { "type": "string" },
-      "api_token": { "type": "string" }
+      "api_token": { "type": "string" },
+      "theme": { "enum": [ "color", "monochrome" ] }
     }
   },
-  "output": {}
+  "output": {},
+  "rigging": {
+    "output": {
+      "component": "slipwayhq.echarts.0.5.1",
+      "allow": [
+        { "permission": "fonts" },
+        { "permission": "registry_components", "publisher": "slipwayhq", "name": "svg" },
+        { "permission": "registry_components", "publisher": "slipwayhq", "name": "echarts_svg" }
+      ],
+      "input": {
+        "width": "$$.input.width",
+        "height": "$$.input.height",
+        "chart": "$$.input.run.chart",
+        "theme": "$$.input.run.theme"
+      }
+    }
+  }
 }
