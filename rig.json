@@ -7,7 +7,6 @@
         { "permission": "http", "prefix":"https://api.givenergy.cloud/" },
         { "permission": "env", "prefix":"GIVENERGY_" },
         { "permission": "fonts" },
-        { "permission": "registry_components", "publisher": "slipwayhq" },
         { "permission": "registry_components", "publisher": "slipwayhq" }
       ],
       "input": {
