@@ -14,7 +14,7 @@
       "theme": { "enum": [ "color", "monochrome" ] }
     }
   },
-  "output": {},
+  "output": "canvas",
   "rigging": {
     "output": {
       "component": "slipwayhq.echarts.0.5.1",
