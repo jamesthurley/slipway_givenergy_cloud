@@ -59,3 +59,12 @@ Output:
   }
 }
 ```
+
+Rendered in monochrome for a TRMNL eInk display:
+
+![TRMNL showing the GivEnergy Cloud component](trmnl-givenergy-cloud.jpg)
+
+
+Rendered in color for an iPhone widget:
+
+![iPhone showing the GivEnergy Cloud component](iphone-givenergy-cloud.jpg)
