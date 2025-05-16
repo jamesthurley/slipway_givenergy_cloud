@@ -41,18 +41,29 @@ export async function run(input) {
   ]);
 
   // Combine data in the correct order
-  const allData = [...yesterdayData, ...todayData];
-
+  let allData = [...yesterdayData, ...todayData];
   console.log(`Got ${allData.length} data points.`);
 
+  if (input.hours_to_show) {
+    allData = filterDataToLastHours(allData, input.hours_to_show);
+    console.log(`Filtered to ${allData.length} data points.`);
+  }
+  
   // Build ECharts JSON
-  const chart = buildEchartsJson(allData);
+  const chart = buildEchartsJson(allData, input.max_axis_power);
   const theme = createTheme(input.theme);
 
   return { 
     chart,
     theme
   };
+}
+
+function filterDataToLastHours(items, hours) {
+  const now = new Date();
+  const twentyFourHoursAgo = new Date(now.getTime() - hours * 60 * 60 * 1000);
+  const recentItems = items.filter(item => new Date(item.time) >= twentyFourHoursAgo);
+  return recentItems;
 }
 
 function createTheme(theme) {
@@ -144,7 +155,7 @@ function fetchPage(path, requestOptions, page) {
   });
 }
 
-function buildEchartsJson(data) {
+function buildEchartsJson(data, max_axis_power) {
   const times = data.map(d => new Date(d.time).getTime());
   const solar = data.map(d => d.power.solar.power);
   const grid = data.map(d => d.power.grid.power);
@@ -152,7 +163,7 @@ function buildEchartsJson(data) {
   const batteryPercent = data.map(d => d.power.battery.percent);
   const consumption = data.map(d => d.power.consumption.power);
 
-  return {
+  let definition = {
     legend: {
       data: ["Consumption", "Battery", "Solar", "Grid", "Battery %"],
       itemStyle: { opacity: 0 }
@@ -225,4 +236,11 @@ function buildEchartsJson(data) {
       },
     ]
   };
+
+  if (max_axis_power) {
+    definition.yAxis[0].max = max_axis_power;
+    definition.yAxis[0].min = -max_axis_power;
+  }
+
+  return definition;
 }

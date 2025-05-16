@@ -11,7 +11,9 @@
     "optionalProperties": {
       "inverter_id": { "type": "string" },
       "api_token": { "type": "string" },
-      "theme": { "enum": [ "color", "monochrome" ] }
+      "theme": { "enum": [ "color", "monochrome" ] },
+      "hours_to_show": { "type": "uint32" },
+      "max_axis_power": { "type": "uint32" }
     }
   },
   "output": "canvas",
