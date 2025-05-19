@@ -155,13 +155,25 @@ function fetchPage(path, requestOptions, page) {
   });
 }
 
-function buildEchartsJson(data, max_axis_power) {
+function buildEchartsJson(data, power_axis_limit) {
   const times = data.map(d => new Date(d.time).getTime());
   const solar = data.map(d => d.power.solar.power);
   const grid = data.map(d => d.power.grid.power);
   const battery = data.map(d => d.power.battery.power);
   const batteryPercent = data.map(d => d.power.battery.percent);
   const consumption = data.map(d => d.power.consumption.power);
+
+  let power_axis_max = Math.max(...solar, ...grid, ...battery, ...consumption);
+  let power_axis_min = Math.min(...solar, ...grid, ...battery, ...consumption);
+
+  if (power_axis_limit) {
+    if (power_axis_max > power_axis_limit) {
+      power_axis_max = power_axis_limit;
+    }
+    if (power_axis_min < -power_axis_limit) {
+      power_axis_min = -power_axis_limit;
+    }
+  }
 
   let definition = {
     legend: {
@@ -187,6 +199,8 @@ function buildEchartsJson(data, max_axis_power) {
       {
         type: "value",
         name: "Power (W)",
+        max: power_axis_max,
+        min: power_axis_min,
         splitLine: {
           lineStyle: { color: "#000", type: [1, 8] }
         }
@@ -236,11 +250,6 @@ function buildEchartsJson(data, max_axis_power) {
       },
     ]
   };
-
-  if (max_axis_power) {
-    definition.yAxis[0].max = max_axis_power;
-    definition.yAxis[0].min = -max_axis_power;
-  }
 
   return definition;
 }

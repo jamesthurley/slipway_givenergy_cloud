@@ -2,7 +2,7 @@
   "description": "Example rig for rending GivEnergy data with ECharts",
   "rigging": {
     "ge": {
-      "component": "jamesthurley.givenergy_cloud.0.5.0",
+      "component": "jamesthurley.givenergy_cloud.0.6.3",
       "allow": [
         { "permission": "http", "prefix":"https://api.givenergy.cloud/" },
         { "permission": "env", "prefix":"GIVENERGY_" },

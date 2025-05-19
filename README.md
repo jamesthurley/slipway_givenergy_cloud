@@ -35,7 +35,7 @@ which itself loads other components, to render the chart.
 
 Test the component by running the following command and pasting in the input when prompted:
 ```
-slipway run-component "jamesthurley.givenergy_cloud.0.5.0" --allow-http-prefix "https://api.givenergy.cloud/" --allow-fonts --allow-registry-components
+slipway run-component "jamesthurley.givenergy_cloud.0.6.3" --allow-http-prefix "https://api.givenergy.cloud/" --allow-fonts --allow-registry-components
 ```
 
 Input:
